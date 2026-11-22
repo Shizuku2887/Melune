@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* 全屏基础重置：让布局填满整个窗口，无默认外边距 */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 禁止 Tauri 窗口内的默认滚动与文本选择（播放器类应用常见行为） */
+body {
+  overflow: hidden;
+}
+
+/* ===== SimpleBar 自定义滚动条 ===== */
+/* 目标：只显示圆角拖动块，且仅在鼠标悬停列表区域时出现；触摸设备完全不显示 */
+
+/* 滚动条整体轨道：透明，不占视觉空间 */
+[data-simplebar] .simplebar-track,
+[data-simplebar] .simplebar-track.simplebar-vertical,
+[data-simplebar] .simplebar-track.simplebar-horizontal {
+  width: 8px;
+  background: transparent;
+}
+
+/* 拖动块：默认透明隐藏 */
+[data-simplebar] .simplebar-scrollbar::before {
+  background-color: transparent;
+  border-radius: 9999px;
+  left: 2px;
+  right: 2px;
+  opacity: 0;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* 仅在鼠标悬停滚动容器时显示拖动块 */
+[data-simplebar]:hover .simplebar-scrollbar::before {
+  background-color: rgba(255, 255, 255, 0.28);
+  opacity: 1;
+}
+
+/* 直接抓握拖动块时加深 */
+[data-simplebar]:hover .simplebar-scrollbar.simplebar-visible::before,
+[data-simplebar]:hover .simplebar-scrollbar:hover::before {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+/* ===== 触摸设备（如 Android）：完全不显示滚动条 ===== */
+@media (pointer: coarse) {
+  [data-simplebar] .simplebar-track {
+    display: none !important;
+  }
+}
