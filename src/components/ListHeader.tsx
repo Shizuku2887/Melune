@@ -67,7 +67,7 @@ function ListHeader({
   }, [searchOpen]);
 
   return (
-    <header className="relative flex shrink-0 items-center gap-1 border-b border-neutral-800 px-2 py-2">
+    <header className="relative flex shrink-0 items-center gap-1 px-2">
       <div ref={menuRef} className="flex shrink-0 items-center gap-1">
         {/* 菜单按钮：点击切换页面 */}
         <button
@@ -138,7 +138,7 @@ function ListHeader({
       {/* 搜索区域：始终靠右。输入框盒子展开时向左扩张填满剩余空间，
           收起时向右收缩（右侧边缘固定不动）；搜索按钮独立于输入框盒子，
           位置始终固定在最右侧。 */}
-      <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1">
+      <div className="ml-3 flex min-w-0 flex-1 items-center justify-end gap-1">
         {/* 输入框盒子：独立的一个盒子，展开/收起动画 */}
         <motion.div
           initial={false}

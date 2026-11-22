@@ -91,7 +91,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
     return (
       <header
         data-tauri-drag-region
-        className="flex h-9 shrink-0 select-none items-center border-b border-neutral-800 px-3 text-neutral-300"
+        className="flex h-9 shrink-0 select-none items-center px-3 text-neutral-300"
       >
         {logo}
       </header>
@@ -103,7 +103,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
     return (
       <header
         data-tauri-drag-region
-        className="flex h-9 shrink-0 select-none items-center justify-end border-b border-neutral-800 px-1 text-neutral-300"
+        className="flex h-9 shrink-0 select-none items-center justify-end px-1 text-neutral-300"
       >
         {controls}
       </header>
@@ -114,7 +114,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
   return (
     <header
       data-tauri-drag-region
-      className="flex h-9 shrink-0 select-none items-center justify-between border-b border-neutral-800 bg-neutral-900 px-3 text-neutral-300"
+      className="flex h-9 shrink-0 select-none items-center justify-between px-3 text-neutral-300"
     >
       {logo}
       {controls}
