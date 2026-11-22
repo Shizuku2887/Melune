@@ -116,29 +116,30 @@ function MainLayout() {
           className="group flex flex-1 flex-col overflow-hidden border-neutral-800 portrait:border-b landscape:flex-none"
           style={isLandscape ? { width: listWidth } : undefined}
         >
-          <div className="liquid-glass relative z-10">
-            {/* 横屏：logo 位于本列顶部，参与分栏 */}
-            {isLandscape && <TitleBar part="logo" />}
 
-            {/* 列表标题栏（菜单切换页面 + 搜索，搜索框从右向左扩张） */}
-            <ListHeader
-              title={activePageLabel}
-              pages={PAGES}
-              activePageId={activePageId}
-              onSelectPage={(id) => {
-                setActivePageId(id);
-                setSearchOpen(false);
-              }}
-              onSearchClick={() => setSearchOpen((v) => !v)}
-              searchOpen={searchOpen}
-            />
-
-            {/* 工具栏：仅歌曲页显示，位于列表标题栏下方 */}
-            {activePageId === "songs" && <ListToolbar count={SONG_COUNT} />}
-          </div>
 
           {/* 列表内容占位：使用 SimpleBar 自绘滚动条 */}
-          <SimpleBar className="min-h-0 flex-1">
+          <SimpleBar className="relative min-h-0 flex-1">
+            <div className="sticky top-0 left-0 z-10">
+              {/* 横屏：logo 位于本列顶部，参与分栏 */}
+              {isLandscape && <TitleBar part="logo" />}
+
+              {/* 列表标题栏（菜单切换页面 + 搜索，搜索框从右向左扩张） */}
+              <ListHeader
+                title={activePageLabel}
+                pages={PAGES}
+                activePageId={activePageId}
+                onSelectPage={(id) => {
+                  setActivePageId(id);
+                  setSearchOpen(false);
+                }}
+                onSearchClick={() => setSearchOpen((v) => !v)}
+                searchOpen={searchOpen}
+              />
+
+              {/* 工具栏：仅歌曲页显示，位于列表标题栏下方 */}
+              {activePageId === "songs" && <ListToolbar count={SONG_COUNT} />}
+            </div>
             <ul className="space-y-1 p-2">
               {Array.from({ length: SONG_COUNT }).map((_, i) => (
                 <li

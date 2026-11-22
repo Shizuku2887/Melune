@@ -12,7 +12,7 @@ interface ListToolbarProps {
 
 function ListToolbar({ count }: ListToolbarProps) {
   return (
-    <div className="flex shrink-0 items-center gap-1 border-b border-neutral-800/60 px-2 backdrop-blur-2xl backdrop-saturate-150">
+    <div className="flex shrink-0 items-center gap-1 border-b border-neutral-800/60 px-2">
       {/* 随机播放 */}
       <button
         type="button"
