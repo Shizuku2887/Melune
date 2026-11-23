@@ -1,21 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-/** 可切换页面的选项 */
-export interface PageOption {
-  id: string;
-  label: string;
-}
-
 interface ListHeaderProps {
-  /** 右侧显示的当前页面标题 */
+  /** 左侧显示的当前页面标题 */
   title: string;
-  /** 可切换的页面列表 */
-  pages: PageOption[];
-  /** 当前激活的页面 id */
-  activePageId: string;
-  /** 选择某个页面时回调 */
-  onSelectPage: (id: string) => void;
   /** 点击搜索按钮回调 */
   onSearchClick: () => void;
   /** 搜索框是否展开 */
@@ -25,8 +13,7 @@ interface ListHeaderProps {
 /**
  * ListHeader - 列表区域顶部标题栏
  *
- * 包含：左侧菜单按钮（点击弹出页面切换菜单）、页面标题、右侧搜索区域。
- * 点击菜单项可切换左侧列表区域展示的页面内容。
+ * 包含：页面标题、右侧搜索区域。页面切换菜单已独立为左侧菜单栏。
  *
  * 搜索交互：搜索输入框与搜索按钮为两个独立盒子，与标题同处一行。
  * 搜索按钮固定在最右侧、位置不变；输入框盒子收起时宽度为 0，
@@ -34,29 +21,8 @@ interface ListHeaderProps {
  * 长度不固定，在标题前「停下」（紧贴标题右缘），标题保持自身宽度不被覆盖。
  * 使用 framer-motion 对 flex-grow 做平滑过渡（打开向左扩、关闭向右收）。
  */
-function ListHeader({
-  title,
-  pages,
-  activePageId,
-  onSelectPage,
-  onSearchClick,
-  searchOpen,
-}: ListHeaderProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+function ListHeader({ title, onSearchClick, searchOpen }: ListHeaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // 点击菜单外部时关闭菜单
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleDown = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleDown);
-    return () => document.removeEventListener("mousedown", handleDown);
-  }, [menuOpen]);
 
   // 搜索框展开后自动聚焦
   useEffect(() => {
@@ -67,69 +33,7 @@ function ListHeader({
   }, [searchOpen]);
 
   return (
-    <header className="relative flex shrink-0 items-center gap-1 px-2 pb-2">
-      <div ref={menuRef} className="flex shrink-0 items-center gap-1">
-        {/* 菜单按钮：点击切换页面 */}
-        <button
-          type="button"
-          aria-label="菜单"
-          aria-haspopup="menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-neutral-400 hover:bg-white/10 hover:text-neutral-100"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M2 4h12M2 8h12M2 12h12"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
-
-        {/* 页面切换菜单（下拉） */}
-        {menuOpen && (
-          <div
-            role="menu"
-            className="absolute left-2 top-full z-20 mt-1 w-40 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-800 py-1 shadow-lg"
-          >
-            {pages.map((page) => {
-              const active = page.id === activePageId;
-              return (
-                <button
-                  key={page.id}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={active}
-                  onClick={() => {
-                    onSelectPage(page.id);
-                    setMenuOpen(false);
-                  }}
-                  className={
-                    "flex w-full rounded-sm items-center justify-between px-3 py-2 text-left text-sm hover:bg-neutral-700 " +
-                    (active ? "text-emerald-500" : "text-neutral-200")
-                  }
-                >
-                  <span>{page.label}</span>
-                  {active && (
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path
-                        d="M2.5 7.5l3 3 6-6"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
+    <header className="relative flex shrink-0 items-center gap-1 pl-4 pr-2 pb-1 pt-1">
       {/* 当前页面标题：保持自身宽度（不参与伸缩），搜索框在其右侧停下 */}
       <h1 className="max-w-[45%] shrink-0 truncate text-base font-semibold">
         {title}
@@ -144,10 +48,16 @@ function ListHeader({
           initial={false}
           animate={{ flexGrow: searchOpen ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 380, damping: 32 }}
+          onPointerMove={(e) => {
+            // 记录光标在搜索框内的位置，驱动液态玻璃上的跟随高光
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--my", `${e.clientY - rect.top}px`);
+          }}
           className={
             "flex h-8 min-w-0 basis-0 items-center overflow-hidden rounded-md transition-colors " +
             (searchOpen
-              ? "border border-white/20 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md"
+              ? "frosted-glass"
               : "")
           }
         >
@@ -168,11 +78,17 @@ function ListHeader({
           aria-label="搜索"
           aria-pressed={searchOpen}
           onClick={onSearchClick}
+          onPointerMove={(e) => {
+            // 记录光标在按钮内的位置，驱动液态玻璃上的跟随高光
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty("--my", `${e.clientY - rect.top}px`);
+          }}
           className={
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors " +
+            "menu-glass flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors " +
             (searchOpen
               ? "bg-white/10 text-emerald-500"
-              : "text-neutral-400 hover:bg-white/10 hover:text-emerald-500")
+              : "text-neutral-400 hover:text-neutral-100")
           }
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

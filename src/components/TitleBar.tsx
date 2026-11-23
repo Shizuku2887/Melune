@@ -11,6 +11,8 @@ export type TitleBarPart = "full" | "logo" | "controls";
 
 interface TitleBarProps {
   part?: TitleBarPart;
+  /** 紧凑模式：仅显示 logo 图标、隐藏文字（菜单栏收起时使用） */
+  compact?: boolean;
 }
 
 /**
@@ -22,19 +24,53 @@ interface TitleBarProps {
  *
  * 支持拆分为 logo / controls 两部分，以便标题栏参与左右分栏布局。
  */
-function TitleBar({ part = "full" }: TitleBarProps) {
+function TitleBar({ part = "full", compact = false }: TitleBarProps) {
   // 非 Windows 环境不渲染（其他平台保留系统原生标题栏）
   if (!isWindows()) return null;
 
   const appWindow = getCurrentWindow();
 
   const logo = (
-    <div
-      data-tauri-drag-region
-      className="flex items-center gap-2 text-xs font-medium"
-    >
-      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-      <span>Melune</span>
+    <div data-tauri-drag-region className="brand flex items-center gap-2">
+      {/* 品牌图标：月牙（Lune）+ 星光，单色跟随主题 */}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden="true"
+        className="shrink-0"
+      >
+        <defs>
+          {/* 用遮罩从圆上挖出偏移圆，得到边缘平滑的月牙 */}
+          <mask id="melune-moon-mask">
+            <rect width="20" height="20" fill="white" />
+            <circle cx="11.1" cy="9.1" r="6" fill="black" />
+          </mask>
+        </defs>
+        {/* 月牙：开口朝右上 */}
+        <circle
+          cx="8.6"
+          cy="10.8"
+          r="6.2"
+          fill="currentColor"
+          mask="url(#melune-moon-mask)"
+        />
+        {/* 星光：落在月牙开口处 */}
+        <path
+          d="M15.8 2.4c.2 1.3 1.1 2.2 2.4 2.4-1.3.2-2.2 1.1-2.4 2.4-.2-1.3-1.1-2.2-2.4-2.4 1.3-.2 2.2-1.1 2.4-2.4Z"
+          fill="currentColor"
+        />
+      </svg>
+      {/* 文字随收起折叠，logo 图标位置保持不变 */}
+      <span
+        className={
+          "brand-name overflow-hidden whitespace-nowrap transition-all duration-200 " +
+          (compact ? "max-w-0 opacity-0" : "max-w-24 opacity-100")
+        }
+      >
+        Melune
+      </span>
     </div>
   );
 
@@ -44,7 +80,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
         type="button"
         aria-label="最小化"
         onClick={() => appWindow.minimize()}
-        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400 hover:bg-neutral-700 hover:text-neutral-100"
+        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400"
       >
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
           <path d="M2 5h6" stroke="currentColor" strokeWidth="1.2" />
@@ -55,7 +91,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
         type="button"
         aria-label="最大化"
         onClick={() => appWindow.toggleMaximize()}
-        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400 hover:bg-neutral-700 hover:text-neutral-100"
+        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400"
       >
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
           <rect
@@ -73,7 +109,7 @@ function TitleBar({ part = "full" }: TitleBarProps) {
         type="button"
         aria-label="关闭"
         onClick={() => appWindow.close()}
-        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400 hover:bg-red-600 hover:text-white"
+        className="flex h-7 w-10 items-center justify-center rounded text-neutral-400"
       >
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
           <path
@@ -86,12 +122,12 @@ function TitleBar({ part = "full" }: TitleBarProps) {
     </div>
   );
 
-  // 仅左侧 logo：背景透明，透出所在分栏背景
+  // 仅左侧 logo：左内边距与菜单图标对齐，展开 / 收起时位置不变
   if (part === "logo") {
     return (
       <header
         data-tauri-drag-region
-        className="flex h-9 shrink-0 select-none items-center px-3 text-neutral-300"
+        className="flex h-9 shrink-0 select-none items-center pl-[14px]"
       >
         {logo}
       </header>

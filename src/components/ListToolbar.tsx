@@ -3,7 +3,7 @@
  *
  * 提供常见的列表操作入口（占位按钮，暂无实际功能）：
  * 随机播放、排序、更多操作，并显示当前列表的歌曲数量。
- * 视觉风格与 ListHeader 保持一致（neutral 配色、h-8 按钮）。
+ * 视觉风格与 ListHeader 保持一致（neutral 配色、h-6 按钮）。
  */
 interface ListToolbarProps {
   /** 当前列表的歌曲数量 */
@@ -12,7 +12,7 @@ interface ListToolbarProps {
 
 function ListToolbar({ count }: ListToolbarProps) {
   return (
-    <div className="flex shrink-0 items-center gap-1 px-2 pb-4">
+    <div className="flex shrink-0 items-center gap-1 px-2">
 
 
       <div className="flex gap-1 items-center group/random cursor-pointer">
@@ -20,7 +20,7 @@ function ListToolbar({ count }: ListToolbarProps) {
         <button
           type="button"
           aria-label="随机播放"
-          className="flex h-8 w-8 shrink-0 items-center justify-center cursor-pointer rounded-md text-neutral-400 group-hover/random:text-neutral-100"
+          className="flex h-6 w-8 shrink-0 items-center justify-center cursor-pointer rounded-md text-neutral-400 group-hover/random:text-neutral-100"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -49,7 +49,7 @@ function ListToolbar({ count }: ListToolbarProps) {
       <button
         type="button"
         aria-label="排序"
-        className="ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-neutral-400 hover:text-neutral-100"
+        className="ml-auto flex h-6 w-8 shrink-0 items-center justify-center rounded-md text-neutral-400 hover:text-neutral-100"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path
@@ -66,7 +66,7 @@ function ListToolbar({ count }: ListToolbarProps) {
       <button
         type="button"
         aria-label="更多操作"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-neutral-400 hover:text-neutral-100"
+        className="flex h-6 w-8 shrink-0 items-center justify-center rounded-md text-neutral-400 hover:text-neutral-100"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <circle cx="3.5" cy="8" r="1.2" fill="currentColor" />

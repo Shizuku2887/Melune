@@ -14,6 +14,306 @@ body {
   overflow: hidden;
 }
 
+/* ===== 品牌标识：logo 与软件名 ===== */
+/* 颜色统一走主题变量，不绑定具体色相；后续做浅色模式时覆盖 --brand-fg 即可 */
+:root {
+  --brand-fg: #e5e5e5;
+}
+
+.brand {
+  color: var(--brand-fg);
+}
+
+/* 软件名：圆润无衬线，贴合柔和、可爱的品牌气质 */
+.brand-name {
+  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN",
+    "Yu Gothic UI", "Meiryo", "PingFang SC", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* ===== 鼠标跟随发光样式（设置中可切换） ===== */
+/* 默认圆形光斑；给根节点加 .glow-ellipse / .glow-sweep 可切换形状。
+   形状规则见文件末尾“发光形状”分组，统一放在各玻璃表面之后覆盖 */
+
+/* ===== 列表歌曲项：悬停时的液态玻璃背景 ===== */
+/* 用一层渐变 + 背景模糊/增饱和 + 内高光的伪元素铺在内容下方，
+   悬停时淡入，形成透光、带折射感的半透明玻璃效果 */
+.song-item {
+  position: relative;
+  isolation: isolate;
+  /* 鼠标跟随光晕的位置，默认居中；由 JS 的 pointermove 实时更新 */
+  --mx: 50%;
+  --my: 50%;
+}
+
+.song-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  background-color: rgba(255, 255, 255, 0.06);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.07) 65%,
+    rgba(255, 255, 255, 0.16) 100%
+  );
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.song-item:hover::before {
+  opacity: 1;
+}
+
+/* 鼠标位置的高光：跟随光标的柔光打在玻璃表面，增强透光与折射感 */
+.song-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  mix-blend-mode: screen;
+}
+
+.song-item:hover::after {
+  opacity: 1;
+}
+
+/* ===== 播放栏 / 底部导航：整块液态玻璃上的鼠标跟随高光 ===== */
+/* 与列表行同一套思路，差别只是光斑更大、更柔和，作用于整个面板 */
+.glass-glow {
+  isolation: isolate;
+  /* 面板尺寸更大，光斑也相应放大 */
+  --glow-size: 150px;
+  /* 鼠标跟随光晕的位置，默认居中；由 JS 的 pointermove 实时更新 */
+  --mx: 50%;
+  --my: 50%;
+}
+
+.glass-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  mix-blend-mode: screen;
+}
+
+.glass-glow:hover::after {
+  opacity: 1;
+}
+
+/* ===== 侧边导航选项：悬停时的液态玻璃 + 鼠标跟随高光 ===== */
+/* ::before 负责玻璃本体（半透明渐变 + 模糊 + 内高光），
+   ::after 负责跟随鼠标的光晕 */
+.menu-glass {
+  position: relative;
+  isolation: isolate;
+  /* 鼠标跟随光晕的位置，默认居中；由 JS 的 pointermove 实时更新 */
+  --mx: 50%;
+  --my: 50%;
+}
+
+.menu-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.menu-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  mix-blend-mode: screen;
+}
+
+.menu-glass:hover::before,
+.menu-glass:hover::after {
+  opacity: 1;
+}
+
+/* ===== 毛玻璃容器（如搜索框）：与列表项悬停时的玻璃保持一致 ===== */
+.frosted-glass {
+  position: relative;
+  isolation: isolate;
+  /* 鼠标跟随光晕的位置，默认居中；由 JS 的 pointermove 实时更新 */
+  --mx: 50%;
+  --my: 50%;
+  background-color: rgba(255, 255, 255, 0.06);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.07) 65%,
+    rgba(255, 255, 255, 0.16) 100%
+  );
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* 跟随鼠标的光晕，与侧边栏选项一致 */
+.frosted-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  mix-blend-mode: screen;
+}
+
+.frosted-glass:hover::after {
+  opacity: 1;
+}
+
+/* ===== 播放页：液态玻璃下方漂浮的萤火虫 ===== */
+/* 若干绿色光点各自以不同速度上下漂浮，并错开明暗闪烁，
+   透过半透明玻璃呈现在内容下方 */
+.player-fireflies {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    rgba(16, 185, 129, 0.06) 100%
+  );
+}
+
+.firefly {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.4;
+  background: radial-gradient(
+    circle,
+    rgba(209, 250, 229, 0.95) 0%,
+    rgba(52, 211, 153, 0.8) 40%,
+    rgba(16, 185, 129, 0) 72%
+  );
+  box-shadow:
+    0 0 6px 2px rgba(52, 211, 153, 0.55),
+    0 0 16px 5px rgba(16, 185, 129, 0.25);
+  animation-name: firefly-float, firefly-glow;
+  animation-timing-function: ease-in-out, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: alternate, normal;
+  will-change: transform, opacity;
+}
+
+/* 漂浮：各自沿不同方向缓慢移动并轻微缩放，来回往复 */
+@keyframes firefly-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.85);
+  }
+  to {
+    transform: translate3d(var(--drift-x, 12px), var(--drift-y, -30px), 0)
+      scale(1.15);
+  }
+}
+
+/* 闪烁：亮度缓慢起伏 */
+@keyframes firefly-glow {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .firefly {
+    animation: none;
+    opacity: 0.45;
+  }
+}
+
+/* ===== 发光形状 ===== */
+/* 所有玻璃表面的光晕层统一在这里决定形状；
+   放在上面各表面规则之后，默认圆形可被根节点样式覆盖 */
+:is(.song-item, .menu-glass, .frosted-glass, .glass-glow)::after {
+  background: radial-gradient(
+    var(--glow-size, 90px) circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.16) 35%,
+    rgba(255, 255, 255, 0.05) 62%,
+    transparent 82%
+  );
+}
+
+/* 椭圆光斑：横向更宽、纵向更扁，适合长条形的列表行 */
+.glow-ellipse :is(.song-item, .menu-glass, .frosted-glass, .glass-glow)::after {
+  background: radial-gradient(
+    calc(var(--glow-size, 90px) * 1.7) calc(var(--glow-size, 90px) * 0.7)
+      at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.16) 40%,
+    rgba(255, 255, 255, 0.05) 68%,
+    transparent 88%
+  );
+}
+
+/* 扫光：一道斜向光带随鼠标横向扫过（光带宽度约为光斑尺寸的 0.9 倍） */
+.glow-sweep :is(.song-item, .menu-glass, .frosted-glass, .glass-glow)::after {
+  background: linear-gradient(
+    115deg,
+    transparent calc(var(--mx) - var(--glow-size, 90px) * 0.45),
+    rgba(255, 255, 255, 0.28) var(--mx),
+    transparent calc(var(--mx) + var(--glow-size, 90px) * 0.45)
+  );
+}
+
 /* ===== SimpleBar 自定义滚动条 ===== */
 /* 目标：只显示圆角拖动块，且仅在鼠标悬停列表区域时出现；触摸设备完全不显示 */
 
