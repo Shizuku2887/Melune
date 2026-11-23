@@ -109,7 +109,7 @@ function MainLayout() {
       {/* 安全区域内边距：Android 状态栏(顶部)、导航栏(底部)、横屏刘海(左右)自动避让；桌面端 env() 为 0，无影响 */}
       <div
         ref={containerRef}
-        className="flex min-h-0 flex-1 flex-col pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] landscape:pb-[env(safe-area-inset-bottom)] landscape:flex-row"
+        className="relative flex min-h-0 flex-1 flex-col pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] landscape:pb-[env(safe-area-inset-bottom)] landscape:flex-row"
       >
         {/* ===== 左侧：音乐列表分栏 ===== */}
         <section
@@ -117,30 +117,48 @@ function MainLayout() {
           style={isLandscape ? { width: listWidth } : undefined}
         >
 
-
-          {/* 列表内容占位：使用 SimpleBar 自绘滚动条 */}
+          {/* 列表内容：使用 SimpleBar 自绘滚动条；头部作为 sticky 玻璃层叠在内容之上 */}
           <SimpleBar className="relative min-h-0 flex-1">
-            <div className="sticky top-0 left-0 z-10">
-              {/* 横屏：logo 位于本列顶部，参与分栏 */}
-              {isLandscape && <TitleBar part="logo" />}
-
-              {/* 列表标题栏（菜单切换页面 + 搜索，搜索框从右向左扩张） */}
-              <ListHeader
-                title={activePageLabel}
-                pages={PAGES}
-                activePageId={activePageId}
-                onSelectPage={(id) => {
-                  setActivePageId(id);
-                  setSearchOpen(false);
+            {/* 玻璃头部：sticky 固定在列表顶部，下方内容滚动时从玻璃下方穿过。
+                isolate 让内部 z-0/z-10/z-20 的层级只在头部内部比较，不会盖住页面其他浮层。 */}
+            <div className="sticky top-0 z-20 isolate">
+              {/* 玻璃背景层：纯 CSS 玻璃拟态，绝对定位铺满整个头部，只作装饰、不参与交互。
+                  底色保持到接近底部，只用垂直 mask 在最后一小段淡出，
+                  让渐变恰好收束在头部底边。 */}
+              <div
+                className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 to-white/5 backdrop-blur-xl backdrop-saturate-150"
+                style={{
+                  maskImage:
+                    "linear-gradient(to bottom, black 85%, transparent 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 85%, transparent 100%)",
                 }}
-                onSearchClick={() => setSearchOpen((v) => !v)}
-                searchOpen={searchOpen}
               />
 
-              {/* 工具栏：仅歌曲页显示，位于列表标题栏下方 */}
-              {activePageId === "songs" && <ListToolbar count={SONG_COUNT} />}
+              {/* 头部内容层：正常文档流，撑开父容器高度 */}
+              <div className="relative z-10 ">
+                {/* 横屏：logo 位于本列顶部，参与分栏 */}
+                {isLandscape && <TitleBar part="logo" />}
+
+                {/* 列表标题栏（菜单切换页面 + 搜索，搜索框从右向左扩张） */}
+                <ListHeader
+                  title={activePageLabel}
+                  pages={PAGES}
+                  activePageId={activePageId}
+                  onSelectPage={(id) => {
+                    setActivePageId(id);
+                    setSearchOpen(false);
+                  }}
+                  onSearchClick={() => setSearchOpen((v) => !v)}
+                  searchOpen={searchOpen}
+                />
+
+                {/* 工具栏：仅歌曲页显示，位于列表标题栏下方 */}
+                {activePageId === "songs" && <ListToolbar count={SONG_COUNT} />}
+              </div>
             </div>
-            <ul className="space-y-1 p-2">
+
+            <ul className="space-y-1 p-2 portrait:pb-[calc(env(safe-area-inset-bottom)+3.5rem)]">
               {Array.from({ length: SONG_COUNT }).map((_, i) => (
                 <li
                   key={i}
@@ -175,7 +193,9 @@ function MainLayout() {
         )}
 
         {/* ===== 右侧：播放器分栏 ===== */}
-        <aside className="flex h-14 shrink-0 flex-col border-neutral-800 bg-neutral-800/50 portrait:pb-[env(safe-area-inset-bottom)] landscape:h-auto landscape:flex-1">
+        {/* 液态玻璃背景：半透明白 + 背景模糊与饱和增强，与列表头部玻璃效果保持一致。
+            竖屏时通过绝对定位悬浮在列表底部之上，让列表滚动条与内容从玻璃下方穿过、透出玻璃。 */}
+        <aside className={`flex h-14 shrink-0 flex-col border-white/10 bg-white/5 backdrop-blur-xl backdrop-saturate-150 portrait:absolute portrait:inset-x-0 portrait:bottom-0 portrait:z-30 portrait:border-t portrait:pb-[env(safe-area-inset-bottom)] landscape:h-auto landscape:flex-1 ${!isLandscape && "rounded-t-md"} `}>
           {/* 横屏：窗口控制按钮位于本列顶部，参与分栏 */}
           {isLandscape && <TitleBar part="controls" />}
 

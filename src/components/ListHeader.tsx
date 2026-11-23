@@ -67,7 +67,7 @@ function ListHeader({
   }, [searchOpen]);
 
   return (
-    <header className="relative flex shrink-0 items-center gap-1 px-2">
+    <header className="relative flex shrink-0 items-center gap-1 px-2 pb-2">
       <div ref={menuRef} className="flex shrink-0 items-center gap-1">
         {/* 菜单按钮：点击切换页面 */}
         <button
@@ -76,7 +76,7 @@ function ListHeader({
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-neutral-400 hover:bg-white/10 hover:text-neutral-100"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -107,8 +107,8 @@ function ListHeader({
                     setMenuOpen(false);
                   }}
                   className={
-                    "flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-neutral-700 " +
-                    (active ? "text-emerald-400" : "text-neutral-200")
+                    "flex w-full rounded-sm items-center justify-between px-3 py-2 text-left text-sm hover:bg-neutral-700 " +
+                    (active ? "text-emerald-500" : "text-neutral-200")
                   }
                 >
                   <span>{page.label}</span>
@@ -145,8 +145,10 @@ function ListHeader({
           animate={{ flexGrow: searchOpen ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 380, damping: 32 }}
           className={
-            "flex h-8 min-w-0 basis-0 items-center overflow-hidden rounded-md " +
-            (searchOpen ? "bg-neutral-800" : "")
+            "flex h-8 min-w-0 basis-0 items-center overflow-hidden rounded-md transition-colors " +
+            (searchOpen
+              ? "border border-white/20 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md"
+              : "")
           }
         >
           {/* 输入框：仅在点击搜索按钮展开后显示；宽度随盒子自适应（flex-1），长度不固定 */}
@@ -155,7 +157,7 @@ function ListHeader({
               ref={inputRef}
               type="text"
               placeholder={`搜索${title}`}
-              className="h-full min-w-0 flex-1 bg-transparent px-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none"
+              className="h-full min-w-0 flex-1 bg-transparent px-2.5 text-xs text-neutral-100 placeholder:text-neutral-500 focus:outline-none"
             />
           )}
         </motion.div>
@@ -167,10 +169,10 @@ function ListHeader({
           aria-pressed={searchOpen}
           onClick={onSearchClick}
           className={
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-md " +
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors " +
             (searchOpen
-              ? "text-emerald-400"
-              : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100")
+              ? "bg-white/10 text-emerald-500"
+              : "text-neutral-400 hover:bg-white/10 hover:text-emerald-500")
           }
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
